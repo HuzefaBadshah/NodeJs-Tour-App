@@ -77,7 +77,7 @@ userSchema.methods.changedPasswordAfter = function(jwtTimestamp) {
   return false;
 };
 
-userSchema.methods.createPasswordResetToken = async function() {
+userSchema.methods.createPasswordResetToken = function() {
   const resetToken = crypto.randomBytes(32).toString('hex');
   this.passwordResetToken = crypto
     .createHash('sha256')
@@ -85,6 +85,7 @@ userSchema.methods.createPasswordResetToken = async function() {
     .digest('hex');
 
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+  console.log(`Original: ${resetToken}, Encrypted: ${this.passwordResetToken}`);
   return resetToken;
 };
 
