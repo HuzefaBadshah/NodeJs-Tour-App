@@ -1,20 +1,24 @@
 const express = require('express');
-const userController = require('./../controllers/userController');
+const { updateMe } = require('./../controllers/userController');
 const {
   signup,
   login,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  protect,
+  updatePassword
 } = require('../controllers/authController');
 
 const router = express.Router();
 
-router.route('/signup').post(signup);
-router.route('/login').post(login);
-router.route('/forgotPassword').post(forgotPassword);
-router.route('/resetPassword').post(resetPassword);
+router.post('/signup', signup);
+router.post('/login', login);
+router.post('/forgotPassword', forgotPassword);
+router.post('/resetPassword/:token', resetPassword);
+router.patch('/updateMyPassword', protect, updatePassword);
+router.patch('/updateMe', protect, updateMe).
 
-router
+  router
   .route('/')
   .get(userController.getAllUsers)
   .post(userController.createUser);

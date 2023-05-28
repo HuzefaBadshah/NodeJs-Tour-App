@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
     validate: {
-      validator: function(email) {
+      validator: function (email) {
         return validator.isEmail(email);
       },
       message: 'Please provide a valid email address'
@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Please confirm your password'],
     validate: {
       // this here only works for CREATE and SAVE
-      validator: function(passConfirm) {
+      validator: function (passConfirm) {
         return passConfirm === this.password;
       },
       message: 'Confirmed Password should match Password above!'
@@ -45,7 +45,7 @@ const userSchema = new mongoose.Schema({
 });
 
 // Document middleware
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function (next) {
   // Only run this function if password was modified
   if (!this.isModified('password')) return next();
 
@@ -58,14 +58,20 @@ userSchema.pre('save', async function(next) {
   next();
 });
 
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+})
+
 //INSTANCE method
 // this method will be available on all documents of Users collection
-userSchema.methods.correctPassword = async function(userPass) {
+userSchema.methods.correctPassword = async function (userPass) {
   return await bcrypt.compare(userPass, this.password); // make sure the order of arguments are correct here.
 };
 
 //INSTANCE method
-userSchema.methods.changedPasswordAfter = function(jwtTimestamp) {
+userSchema.methods.changedPasswordAfter = function (jwtTimestamp) {
   if (this.passwordChangedAt) {
     let changedTimeStamp = parseInt(
       this.passwordChangedAt.getTime() / 1000,
@@ -77,7 +83,7 @@ userSchema.methods.changedPasswordAfter = function(jwtTimestamp) {
   return false;
 };
 
-userSchema.methods.createPasswordResetToken = function() {
+userSchema.methods.createPasswordResetToken = function () {
   const resetToken = crypto.randomBytes(32).toString('hex');
   this.passwordResetToken = crypto
     .createHash('sha256')

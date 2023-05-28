@@ -1,6 +1,16 @@
+const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const User = require('./../models/userModel');
 
+function filterObj(obj = {}, ...allowedFields) {
+  const newObj = {};
+  Object.keys(obj).forEach((key) => {
+    if (allowedFields.includes(key)) {
+      newObj[key] = obj[key];
+    }
+  });
+  return newObj;
+}
 exports.getAllUsers = catchAsync(async (req, res) => {
   const users = await User.find();
 
@@ -12,6 +22,25 @@ exports.getAllUsers = catchAsync(async (req, res) => {
     }
   });
 });
+
+exports.updateMe = catchAsync(async function (req, res, next) {
+  const { password, passwordConfirm } = req.body;
+  if (password || passwordConfirm) {
+    return next(new AppError('This route is not for password updates, Please use /updateMyPassword instead', 400))
+  }
+
+  // Update user data
+  const filteredBody = filterObj(req.body, 'name', 'email');
+  const updatedUser = User.findByIdAndUpdate(req.user.id, filteredBody, { new: true, runValidators: true });
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user: updatedUser
+    }
+  });
+});
+
 exports.getUser = (req, res) => {
   res.status(500).json({
     status: 'error',
@@ -24,7 +53,7 @@ exports.createUser = (req, res) => {
     message: 'This route is not yet defined!'
   });
 };
-exports.updateUser = (req, res) => {
+exports.updateUser = (req, res) => {// Only administrator should update user data
   res.status(500).json({
     status: 'error',
     message: 'This route is not yet defined!'
