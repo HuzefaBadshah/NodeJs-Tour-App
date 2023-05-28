@@ -31,13 +31,21 @@ exports.updateMe = catchAsync(async function (req, res, next) {
 
   // Update user data
   const filteredBody = filterObj(req.body, 'name', 'email');
-  const updatedUser = User.findByIdAndUpdate(req.user.id, filteredBody, { new: true, runValidators: true });
+  const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, { new: true, runValidators: true });
 
   res.status(200).json({
     status: 'success',
     data: {
       user: updatedUser
     }
+  });
+});
+
+exports.deleteMe = catchAsync(async function (req, res, next) {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+  res.status(204).json({
+    status: 'success',
+    data: null
   });
 });
 
