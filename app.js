@@ -2,6 +2,8 @@ const express = require('express');
 const morgan = require('morgan');
 const helmet = require('helmet');
 const rateLimiter = require('express-rate-limit');
+const mongoSanitize = require('express-mongo-sanitize');
+const xssClean = require('xss-clean');
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -33,6 +35,14 @@ app.use('/api', limiter);
 
 //Body Parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' })); // limiting payload not more than 10 kilo bytes
+
+// Data Sanitization for req.body, req.query and req.params against NoSQL query injection
+app.use(mongoSanitize());
+
+// Data sanitization against XSS
+// this middleware with protect from any malicious HTML code from user
+
+app.use(xssClean());
 
 //Serving static files
 app.use(express.static(`${__dirname}/public`));
