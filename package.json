@@ -8,13 +8,14 @@
     "start:prod": "cross-env NODE_ENV=production nodemon server.js",
     "debug": "ndb server.js"
   },
-  "author": "Jonas Schmedtmann",
+  "author": "Huzefa Badshah",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "dotenv": "^7.0.0",
     "express": "^4.18.2",
     "express-rate-limit": "^6.7.0",
+    "helmet": "^7.0.0",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^5.13.17",
     "morgan": "^1.10.0",
