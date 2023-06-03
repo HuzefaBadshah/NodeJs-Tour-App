@@ -14,7 +14,15 @@ function signToken(id) {
 
 function createSendToken(user, res, statusCode) {
   const token = signToken(user._id);
-
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    secure: false,
+    httpOnly: true
+  };
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+  res.cookie('jwt', token, cookieOptions);
   res.status(statusCode).json({
     status: 'success',
     token,
@@ -24,7 +32,7 @@ function createSendToken(user, res, statusCode) {
   });
 }
 
-exports.signup = catchAsync(async function (req, res, next) {
+exports.signup = catchAsync(async function(req, res, next) {
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
@@ -36,7 +44,7 @@ exports.signup = catchAsync(async function (req, res, next) {
   createSendToken(newUser, res, 201);
 });
 
-exports.login = catchAsync(async function (req, res, next) {
+exports.login = catchAsync(async function(req, res, next) {
   const { email, password } = req.body;
 
   // check if email and password exist
@@ -54,7 +62,7 @@ exports.login = catchAsync(async function (req, res, next) {
   createSendToken(user, res, 200);
 });
 
-exports.protect = catchAsync(async function (req, res, next) {
+exports.protect = catchAsync(async function(req, res, next) {
   let token;
   if (
     req.headers.authorization &&
@@ -94,7 +102,7 @@ exports.protect = catchAsync(async function (req, res, next) {
   next();
 });
 
-exports.restrictTo = function (...roles) {
+exports.restrictTo = function(...roles) {
   return (req, res, next) => {
     // roles ['admin', 'lead-guide']
     if (!roles.includes(req.user.role)) {
@@ -106,7 +114,7 @@ exports.restrictTo = function (...roles) {
   };
 };
 
-exports.forgotPassword = async function (req, res, next) {
+exports.forgotPassword = async function(req, res, next) {
   console.log('req.body.email: ', req.body.email);
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
@@ -150,7 +158,10 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     .update(req.params.token)
     .digest('hex');
 
-  const user = await User.findOne({ passwordResetToken: hashedToken, passwordResetExpires: { $gt: Date.now() } });
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() }
+  });
 
   // 2. If token has not expired and there is a user, set the password
 
@@ -169,13 +180,13 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   createSendToken(user, res, 200);
 });
 
-exports.updatePassword = catchAsync(async function (req, res, next) {
+exports.updatePassword = catchAsync(async function(req, res, next) {
   //1. Get user from collection.
   console.log('updatePassword: ', req.user);
   const user = await User.findById(req.user.id).select('+password');
 
   // 2. Check if posted currentPassword is correct
-  if (!await user.correctPassword(req.body.currentPassword)) {
+  if (!(await user.correctPassword(req.body.currentPassword))) {
     return next(new AppError('Your current password is wrong!', 401));
   }
 
@@ -186,4 +197,4 @@ exports.updatePassword = catchAsync(async function (req, res, next) {
 
   // 4. send jwt token
   createSendToken(user, res, 200);
-})
+});
