@@ -4,10 +4,11 @@ const helmet = require('helmet');
 const rateLimiter = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
 const xssClean = require('xss-clean');
-const hpp = require("hpp");
+const hpp = require('hpp');
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+const reviewRouter = require('./routes/reviewRoutes');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 
@@ -23,7 +24,6 @@ app.use(helmet());
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
-
 
 // Limit request from same API
 const limiter = rateLimiter({
@@ -45,14 +45,23 @@ app.use(mongoSanitize());
 app.use(xssClean());
 
 // Prevent parameter pollution
-app.use(hpp({
-  whitelist: ['duration', 'ratingsQuantity', 'ratingsAverage', 'maxGroupSize', 'difficulty', 'price']
-}));
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'maxGroupSize',
+      'difficulty',
+      'price'
+    ]
+  })
+);
 
 //Serving static files
 app.use(express.static(`${__dirname}/public`));
 
-// Test middleware  
+// Test middleware
 app.use((req, res, next) => {
   console.log('Hello from the test middleware 👋');
   next();
@@ -66,8 +75,9 @@ app.use((req, res, next) => {
 // 3) ROUTES
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/review', reviewRouter);
 
-app.all('*', function (req, res, next) {
+app.all('*', function(req, res, next) {
   next(
     new AppError(
       `*************${req.originalUrl}*************   is not found on this server!`,

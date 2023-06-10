@@ -53,7 +53,7 @@ const tourSchema = new mongoose.Schema(
     priceDiscount: {
       type: Number,
       validate: {
-        validator: function (val) {
+        validator: function(val) {
           // this only points to current doc on new document creation.
           return val < this.price;
         },
@@ -117,23 +117,15 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
-tourSchema.virtual('durationWeeks').get(function () {
+tourSchema.virtual('durationWeeks').get(function() {
   return (this.duration / 7).toFixed(2);
 });
 
 // DOCUMENT MIDDLEWARE:
 // this document middleware runs only before .save and .create
-tourSchema.pre('save', function (next) {
+tourSchema.pre('save', function(next) {
   this.slug = slugify(this.name, { lower: true });
   next();
-});
-
-// populating the guides
-tourSchema.pre(/^find/, function () {
-  this.populate({
-    path: 'guides',
-    select: '-__v'
-  });
 });
 
 // Embedding user guide documents into tour
@@ -147,26 +139,35 @@ tourSchema.pre(/^find/, function () {
 // });
 
 // this document middleware runs only after all pre middlewares are done.
-tourSchema.post('save', function (doc, next) {
+tourSchema.post('save', function(doc, next) {
   console.log('post middleware: ', doc);
   next();
 });
 
 // Query MIDDLEWARE:
-tourSchema.pre(/^find/, function (next) {
+tourSchema.pre(/^find/, function(next) {
   this.find({ secretTour: { $ne: true } });
   this.start = Date.now();
   next();
 });
 
-tourSchema.post(/^find/, function (docs, next) {
+tourSchema.post(/^find/, function(docs, next) {
   //console.log('post query middleware Docs: ', docs);
   console.log(`Query took ${Date.now() - this.start} milliseconds!`);
   next();
 });
 
+// populating the guides
+tourSchema.pre(/^find/, function(next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v'
+  });
+  next();
+});
+
 //Aggregation Middleware
-tourSchema.pre('aggregate', function (next) {
+tourSchema.pre('aggregate', function(next) {
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
   next();
 });
