@@ -7,7 +7,6 @@ const {
 
 const router = express.Router();
 
-router.post('/createReview/:tourId', protect, restrictTo('user'), createReview);
 router.get('/', getAllReview);
 
 module.exports = router;
