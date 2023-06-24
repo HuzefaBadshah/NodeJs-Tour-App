@@ -5,8 +5,8 @@ const {
   getAllReview
 } = require('../controllers/reviewController');
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
-router.get('/', getAllReview);
+router.route('/').get(getAllReview).post(protect, restrictTo('user'), createReview);
 
 module.exports = router;
