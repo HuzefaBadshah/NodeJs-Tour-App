@@ -54,7 +54,8 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-// Document middleware
+// Document middleware:
+
 userSchema.pre('save', async function(next) {
   // Only run this function if password was modified
   if (!this.isModified('password')) return next();
@@ -74,7 +75,7 @@ userSchema.pre('save', async function(next) {
   next();
 });
 
-// Query Middleware
+// Query Middleware:
 
 userSchema.pre(/^find/, async function(next) {
   // all queries that starts with find
@@ -83,13 +84,13 @@ userSchema.pre(/^find/, async function(next) {
   next();
 });
 
-//INSTANCE method
+//INSTANCE methods :
+
 // this method will be available on all documents of Users collection
 userSchema.methods.correctPassword = async function(userPass) {
   return await bcrypt.compare(userPass, this.password); // make sure the order of arguments are correct here.
 };
 
-//INSTANCE method
 userSchema.methods.changedPasswordAfter = function(jwtTimestamp) {
   if (this.passwordChangedAt) {
     let changedTimeStamp = parseInt(
