@@ -1,6 +1,11 @@
 const Review = require('../models/reviewModel');
-const catchAsync = require('../utils/catchAsync');
-const { deleteOne, updateOne, createOne, getOne } = require('./handlerFactory');
+const {
+  deleteOne,
+  updateOne,
+  createOne,
+  getOne,
+  getAll
+} = require('./handlerFactory');
 
 exports.setTourUserIds = (req, res, next) => {
   // Perfect usecase to use route middleware and make createOne generic
@@ -11,22 +16,7 @@ exports.setTourUserIds = (req, res, next) => {
   next();
 };
 
-exports.getAllReview = catchAsync(async function(req, res, next) {
-  let tourId = req.params.tourId;
-  let filter = {};
-  if (tourId) filter = { tour: tourId };
-
-  const reviews = await Review.find(filter);
-
-  res.status(200).json({
-    status: 'success',
-    results: reviews.length,
-    data: {
-      reviews
-    }
-  });
-});
-
+exports.getAllReview = getAll(Review);
 exports.createReview = createOne(Review);
 exports.updateReview = updateOne(Review);
 exports.deleteReview = deleteOne(Review);

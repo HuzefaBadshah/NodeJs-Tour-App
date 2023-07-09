@@ -1,8 +1,12 @@
 const Tour = require('../models/tourModel');
-const ApiFeatures = require('../utils/apiFeatures');
-const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
-const { deleteOne, updateOne, createOne, getOne } = require('./handlerFactory');
+const {
+  deleteOne,
+  updateOne,
+  createOne,
+  getOne,
+  getAll
+} = require('./handlerFactory');
 
 // exports.checkID = (req, res, next, val) => {
 //   console.log(`Tour id is: ${val}`);
@@ -33,32 +37,7 @@ exports.aliasTopTour = (req, res, next) => {
   next();
 };
 
-exports.getAllTours = catchAsync(async (req, res) => {
-  //console.log('req.query: ', req.query);
-  // const tours = await Tour.find()
-  //   .where('duration')
-  //   .equals(3)
-  //   .where('difficulty')
-  //   .equals('easy');
-
-  // let query = Tour.find(JSON.parse(queryStr));
-
-  let features = new ApiFeatures(Tour.find(), req.query)
-    .filter()
-    .sort('-createdAt _id')
-    .limit('-__v')
-    .pagination();
-
-  const tours = await features.query;
-  res.status(200).json({
-    status: 'success',
-    // requestedAt: req.requestTime,
-    results: tours.length,
-    data: {
-      tours
-    }
-  });
-});
+exports.getAllTours = getAll(Tour);
 
 exports.getTour = getOne(Tour, {
   path: 'reviews'

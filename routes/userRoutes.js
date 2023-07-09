@@ -11,6 +11,8 @@ const {
 
 const router = express.Router();
 
+router.get('/me', protect, userController.getMe, userController.getUser);
+
 router.post('/signup', signup);
 router.post('/login', login);
 router.post('/forgotPassword', forgotPassword);
