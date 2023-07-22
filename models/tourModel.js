@@ -117,6 +117,11 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
+// creating the indexes on most queried paramaters, to only examin the matched docs as per query
+tourSchema.index({price: 1, ratingsAverage: -1});
+tourSchema.index({slug: 1});
+
+
 // Virtual Property durationWeeks
 tourSchema.virtual('durationWeeks').get(function() {
   return (this.duration / 7).toFixed(2);

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Tour = require('./tourModel');
 
 const reviewSchema = new mongoose.Schema(
   {
@@ -49,6 +50,40 @@ reviewSchema.pre(/^find/, function() {
     select: 'name photo'
   });
 });
+
+// Static methods, that will be called on models only
+reviewSchema.statics.calAverageRatings = async function(tourId) {
+  const stats = await this.aggregate([
+    {
+      $match: {tour: tourId}
+    },
+    {
+      $group: {
+        _id: '$tour',
+        nRating: {$sum: 1},
+        avgRating: {$avg: '$rating'}
+      }
+    }
+  ]);
+  console.log('stats: ', stats);
+  await Tour.findByIdAndUpdate(tourId, {
+    ratingsQuantity: stats[0].nRating,
+    ratingsAverage: stats[0].avgRating
+  });
+};
+
+// Document middleware
+
+reviewSchema.post('save', function() {
+  // here this points to current review doc
+  // here this.constructor will point the model from which this document was created
+  // We used post middleware, coz the documents will be saved till then and we can run calAverageRatings to fetch all docs from database..
+  // post middleware doesn't have next in argument
+  this.constructor.calAverageRatings(this.tour);
+});
+
+// findByIdAndUpdate is shorthand for findOneAndUpdate
+// findByIdAndDelete is shorthand for findOneAndDelete
 
 const Review = mongoose.model('Review', reviewSchema);
 module.exports = Review;
