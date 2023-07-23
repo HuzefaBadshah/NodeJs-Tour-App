@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 
-const UserModel = require('./userModel');
 // const validator = require('validator');
 const tourSchema = new mongoose.Schema(
   {
@@ -122,6 +121,7 @@ const tourSchema = new mongoose.Schema(
 // creating the indexes on most queried paramaters, to only examin the matched docs as per query
 tourSchema.index({price: 1, ratingsAverage: -1});
 tourSchema.index({slug: 1});
+tourSchema.index({startLocation: '2dsphere'});
 
 
 // Virtual Property durationWeeks

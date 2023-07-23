@@ -12,6 +12,9 @@ router.use('/:tourId/reviews', reviewRouter);
 router.route('/tour-stats').get(tourController.getTourStats);
 router.route('/month-plan/:year').get(restrictTo('admin', 'lead-guide', 'guide'), tourController.getMonthlyPlan);
 
+router.get('/tours-within/:distance/center/:latlng/unit/:unit', tourController.getToursWithin);
+// can also be achieved with query params: /tours-within?distance=233&center=-40,45&unit=mi
+
 router
   .route('/top-5-cheap')
   .get(tourController.aliasTopTour, tourController.getAllTours);
