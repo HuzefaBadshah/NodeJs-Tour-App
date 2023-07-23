@@ -34,6 +34,9 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
+// Add index to only allow one tour-user combination, inorder to avoid any duplicacy
+reviewSchema.index({tour: 1, user: 1}, {unique: true});
+
 // Query Middleware
 // populating the guides
 reviewSchema.pre(/^find/, function() {
