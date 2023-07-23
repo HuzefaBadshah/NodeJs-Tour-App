@@ -66,14 +66,20 @@ reviewSchema.statics.calAverageRatings = async function(tourId) {
     }
   ]);
   console.log('stats: ', stats);
-  await Tour.findByIdAndUpdate(tourId, {
-    ratingsQuantity: stats[0].nRating,
-    ratingsAverage: stats[0].avgRating
-  });
+  if(stats.length) {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: stats[0].nRating,
+      ratingsAverage: stats[0].avgRating
+    });
+  } else {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: 0,
+      ratingsAverage: 4.5
+    });
+  }
 };
 
 // Document middleware
-
 reviewSchema.post('save', function() {
   // here this points to current review doc
   // here this.constructor will point the model from which this document was created
@@ -82,8 +88,23 @@ reviewSchema.post('save', function() {
   this.constructor.calAverageRatings(this.tour);
 });
 
+// When the review is updated or deleted we only have findByIdAndUpdate/findByIdAndDelete in which we only have query middleware 
+
 // findByIdAndUpdate is shorthand for findOneAndUpdate
 // findByIdAndDelete is shorthand for findOneAndDelete
+
+// When the review is updated or deleted we follow:
+// Query Middleware
+reviewSchema.pre(/^findOneAnd/, async function(next) {
+  this.r = await this.findOne();
+  // this.r = review doc
+  next();
+});
+
+reviewSchema.post(/^findOneAnd/, async function() {
+  //  await this.findOne() will not work here since query has already executed
+  await this.r.constructor.calAverageRatings(this.r.tour);
+});
 
 const Review = mongoose.model('Review', reviewSchema);
 module.exports = Review;
