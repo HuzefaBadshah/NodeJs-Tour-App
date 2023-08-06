@@ -6,6 +6,7 @@ const rateLimiter = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
 const xssClean = require('xss-clean');
 const hpp = require('hpp');
+const cookieParser = require('cookie-parser');
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -15,6 +16,19 @@ const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 
 const app = express();
+
+// Further HELMET configuration for Security Policy (CSP) of Leaflet
+const scriptSrcUrls = ['https://unpkg.com/', 'https://tile.openstreetmap.org'];
+const styleSrcUrls = [
+  'https://unpkg.com/',
+  'https://tile.openstreetmap.org',
+  'https://fonts.googleapis.com/'
+];
+const connectSrcUrls = [
+      'https://unpkg.com', 
+      'https://tile.openstreetmap.org'
+];
+const fontSrcUrls = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 
 // Set view engine
 app.set('view engine', 'pug');
@@ -26,7 +40,23 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public'))); // using path module so that we need not to worry about the slashes
 
 // Set security HTTP headers
+
 app.use(helmet());
+// necessary configurations for leaflet
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: [],
+      connectSrc: ["'self'", ...connectSrcUrls],
+      scriptSrc: ["'self'", ...scriptSrcUrls],
+      styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+      workerSrc: ["'self'", 'blob:'],
+      objectSrc: [],
+      imgSrc: ["'self'", 'blob:', 'data:', 'https:'],
+      fontSrc: ["'self'", ...fontSrcUrls]
+    }
+  })
+);
 
 // Development Logging
 if (process.env.NODE_ENV === 'development') {
@@ -44,6 +74,8 @@ app.use('/api', limiter);
 
 //Body Parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' })); // limiting payload not more than 10 kilo bytes
+// Parse data from cookie
+app.use(cookieParser());
 
 // Data Sanitization for req.body, req.query and req.params against NoSQL query injection
 app.use(mongoSanitize());
@@ -69,6 +101,7 @@ app.use(
 // Test middleware
 app.use((req, res, next) => {
   console.log('Hello from the test middleware 👋');
+  console.log('cookies: ', req.cookies);
   next();
 });
 

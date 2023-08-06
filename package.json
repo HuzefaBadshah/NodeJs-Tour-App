@@ -6,12 +6,17 @@
   "scripts": {
     "start": "nodemon server.js",
     "start:prod": "cross-env NODE_ENV=production nodemon server.js",
-    "debug": "ndb server.js"
+    "debug": "ndb server.js",
+    "watch:js": "parcel serve ./public/js/index.js --dist-dir ./public/js/bundled",
+    "bundle:js": "parcel serve ./public/js/index.js --dist-dir ./public/js/bundled"
   },
   "author": "Huzefa Badshah",
   "license": "ISC",
   "dependencies": {
+    "@babel/polyfill": "^7.12.1",
+    "axios": "^1.4.0",
     "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
     "dotenv": "^7.0.0",
     "express": "^4.18.2",
     "express-mongo-sanitize": "^2.2.0",
@@ -39,6 +44,7 @@
     "eslint-plugin-react": "^7.12.4",
     "ndb": "^1.1.5",
     "nodemon": "^2.0.22",
-    "prettier": "^1.17.0"
+    "parcel": "^2.0.0-rc.0",
+    "prettier": "^1.19.1"
   }
 }
