@@ -1,13 +1,16 @@
 const express = require('express');
-const { getOverview, getTour, getLoginForm } = require('../controllers/viewController');
-const { isLoggedIn } = require('../controllers/authController');
+const { getOverview, getTour, getLoginForm, getAccount, updateUserData } = require('../controllers/viewController');
+const { isLoggedIn, protect } = require('../controllers/authController');
 
 const router = express.Router();
 
-  router.use(isLoggedIn);
+  // router.use(isLoggedIn); // since isLoggedIn and protect will do redundant operations
   
-  router.get('/', getOverview);  
-  router.get('/tour/:slug', getTour);
-  router.get('/login', getLoginForm);
+  router.get('/', isLoggedIn, getOverview);  
+  router.get('/tour/:slug', isLoggedIn, getTour);
+  router.get('/login', isLoggedIn, getLoginForm);
+  router.get('/me', protect, getAccount);
+
+  router.post('/submit-user-data', protect, updateUserData);
 
 module.exports = router;

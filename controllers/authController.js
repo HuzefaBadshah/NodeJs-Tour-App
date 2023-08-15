@@ -101,6 +101,7 @@ exports.protect = catchAsync(async function(req, res, next) {
   // Grant access to the protected route
 
   req.user = currentUser;
+  res.locals.user = currentUser;
   next();
 });
 
@@ -135,6 +136,19 @@ exports.isLoggedIn = async (req, res, next) => {
   }
   next();
 };
+ 
+exports.isLoggedOut = function(req, res, next) {
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + 10 * 1000
+    ),
+    httpOnly: true
+  };
+  res.cookie('jwt', 'loggedout', cookieOptions);
+  res.status(200).json({
+    status: 'success'
+  });
+}
 
 exports.restrictTo = function(...roles) {
   return (req, res, next) => {

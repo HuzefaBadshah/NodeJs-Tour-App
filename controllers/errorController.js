@@ -1,27 +1,64 @@
 const AppError = require('../utils/appError');
 
-function sendErrDev(err, res) {
-  res.status(err.statusCode).json({
-    status: err.status,
-    error: err,
-    message: err.message,
-    stack: err.stack
-  });
-}
+function sendErrDev(err, req, res) {
 
-function sendErrProd(err, res) {
-  if (err.isOperational) {
+  // API
+  if(req.originalUrl.startsWith('/api')) {
     res.status(err.statusCode).json({
       status: err.status,
-      message: err.message
+      error: err,
+      message: err.message,
+      stack: err.stack
     });
-  } else {
-    console.log('Error 🔥', err);
-    res.status(500).json({
+
+  }else {
+    // RENDERED WEBSITE
+    // console.log('sendErrDev originalUrl: ', req.originalUrl);
+    res.status(err.statusCode).render('error', {
+      title: 'Something went wrong!',
+      msg: err.message
+    })
+  }
+}
+
+function sendErrProd(err, req, res) {
+   // A) API
+   if (req.originalUrl.startsWith('/api')) {
+    // A) Operational, trusted error: send message to client
+    if (err.isOperational) {
+      return res.status(err.statusCode).json({
+        status: err.status,
+        message: err.message
+      });
+    }
+    // B) Programming or other unknown error: don't leak error details
+    // 1) Log error
+    console.error('ERROR 💥', err);
+    // 2) Send generic message
+    return res.status(500).json({
       status: 'error',
       message: 'Something went very wrong!'
     });
   }
+
+  // B) RENDERED WEBSITE
+  // A) Operational, trusted error: send message to client
+  if (err.isOperational) {
+    console.log('Website error: ', err);
+    return res.status(err.statusCode).render('error', {
+      title: 'Something went wrong!',
+      msg: err.message
+    });
+  }
+  // B) Programming or other unknown error: don't leak error details
+  // 1) Log error
+  console.error('ERROR 💥', err);
+  // 2) Send generic message
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong!',
+    msg: 'Please try again later.'
+  });
+
 }
 function handleCastErrorDB(err) {
   const message = `Invalid ${err.path}: ${err.value}`;
@@ -56,10 +93,12 @@ module.exports = (err, req, res, next) => {
   err.status = err.status || 'fail';
 
   if (process.env.NODE_ENV === 'development') {
-    sendErrDev(err, res);
+    sendErrDev(err, req, res);
   } else if (process.env.NODE_ENV === 'production') {
     let error = { ...err };
-    console.log('**************production: ', error);
+    error.message = err.message;
+    // console.log('**************production: ', error);
+    // console.log('**************production: ', err);
     if (err.name === 'CastError') {
       error = handleCastErrorDB(err);
     }
@@ -75,6 +114,6 @@ module.exports = (err, req, res, next) => {
     if (error.name === 'TokenExpiredError') {
       error = handleTokenExpiredError();
     }
-    sendErrProd(error, res);
+    sendErrProd(error, req, res);
   }
 };

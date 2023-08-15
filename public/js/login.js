@@ -17,10 +17,26 @@ export async function login({email, password}) {
                 location.assign('/');
             }, 1000);
         }
-        console.log('login res: ', res);
+        //console.log('login res: ', res);
     }catch(err) {
-        console.log('login error: ', err);
+        //console.log('login error: ', err);
         showALert('error', err.response.data.message);
+    }
+}
+
+export async function logout() {
+    try{
+       const res = await axios({
+            method: 'GET',
+            url: 'http://localhost:7000/api/v1/users/logout'
+        });
+        if(res.data.status === 'success'){
+            // important to set reload(true) as it will reload from server and not from browser cache.
+            window.location.reload(true);
+            location.assign('/');
+        }
+    }catch(err) {
+        showALert('error', 'Error logging out try again');
     }
 }
 

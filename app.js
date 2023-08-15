@@ -74,6 +74,12 @@ app.use('/api', limiter);
 
 //Body Parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' })); // limiting payload not more than 10 kilo bytes
+
+// Reading data from a form
+// the way form sends data to server is called urlencoded
+// we need a middleware to parse data from urlencoded form
+app.use(express.urlencoded({extended: true, limit: '10kb'}));
+
 // Parse data from cookie
 app.use(cookieParser());
 
