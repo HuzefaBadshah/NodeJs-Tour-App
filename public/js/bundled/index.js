@@ -487,10 +487,13 @@ if (userDataForm) userDataForm.addEventListener('submit', (e)=>{
     e.preventDefault();
     const emailValue = email.value;
     const nameValue = name.value;
-    _updateSettings.updateSettings({
-        name: nameValue,
-        email: emailValue
-    }, 'data');
+    // To programatically recreate multipart form-data we need to handle it like this:
+    const form1 = new FormData();
+    form1.append('name', nameValue);
+    form1.append('email', emailValue);
+    form1.append('photo', document.getElementById('photo').files[0]);
+    console.log('form multipart: ', form1);
+    _updateSettings.updateSettings(form1, 'data');
 });
 if (userPasswordForm) userPasswordForm.addEventListener('submit', async (e)=>{
     e.preventDefault();

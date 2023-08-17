@@ -14,7 +14,6 @@ const {
 const router = express.Router();
 
 
-
 router.post('/signup', signup);
 router.post('/login', login);
 router.get('/logout', isLoggedOut);
@@ -26,7 +25,7 @@ router.use(protect);
 
 router.get('/me', userController.getMe, userController.getUser);
 router.patch('/updateMyPassword', updatePassword);
-router.patch('/updateMe', userController.updateMe);
+router.patch('/updateMe', userController.uploadUserPhoto, userController.resizeUserPhoto, userController.updateMe);
 router.delete('/deleteMe', userController.deleteMe);
 
 

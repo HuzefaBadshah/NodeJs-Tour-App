@@ -36,7 +36,14 @@ if(userDataForm) {
         e.preventDefault();
         const emailValue = email.value;
         const nameValue = name.value;
-        updateSettings({name: nameValue, email: emailValue}, 'data');
+
+        // To programatically recreate multipart form-data we need to handle it like this:
+        const form = new FormData();
+        form.append('name', nameValue);
+        form.append('email', emailValue);
+        form.append('photo', document.getElementById('photo').files[0]);
+        console.log('form multipart: ', form);
+        updateSettings(form, 'data');
     });
 }
 
