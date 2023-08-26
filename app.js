@@ -19,7 +19,7 @@ const globalErrorHandler = require('./controllers/errorController');
 const app = express();
 
 // Further HELMET configuration for Security Policy (CSP) of Leaflet
-const scriptSrcUrls = ['https://unpkg.com/', 'https://tile.openstreetmap.org'];
+const scriptSrcUrls = ['https://unpkg.com/', 'https://tile.openstreetmap.org', 'https://js.stripe.com/v3/'];
 const styleSrcUrls = [
   'https://unpkg.com/',
   'https://tile.openstreetmap.org',
@@ -47,14 +47,15 @@ app.use(helmet());
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
-      defaultSrc: [],
+      defaultSrc: ["'self'"],
       connectSrc: ["'self'", ...connectSrcUrls],
-      scriptSrc: ["'self'", ...scriptSrcUrls],
+      scriptSrc: ["'self'", ...scriptSrcUrls, 'https://js.stripe.com'],
       styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
       workerSrc: ["'self'", 'blob:'],
       objectSrc: [],
       imgSrc: ["'self'", 'blob:', 'data:', 'https:'],
-      fontSrc: ["'self'", ...fontSrcUrls]
+      fontSrc: ["'self'", ...fontSrcUrls],
+      frameSrc: ["'self'", 'https://js.stripe.com']
     }
   })
 );
@@ -126,7 +127,7 @@ app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/review', reviewRouter);
-app.use('/api/v1/booking', bookingRouter);
+app.use('/api/v1/bookings', bookingRouter);
 
 app.all('*', function(req, res, next) {
   next(

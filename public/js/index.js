@@ -2,6 +2,7 @@ import "@babel/polyfill";
 import { login, logout } from './login';
 import { displayMap } from "./leaflet";
 import { updateSettings } from "./updateSettings";
+import { bookTour } from "./stripe";
 
 // DOM elements
 const map = document.getElementById('map');
@@ -9,6 +10,7 @@ const form = document.getElementsByClassName('form--login')[0];
 const userDataForm = document.getElementsByClassName('form-user-data')[0];
 const userPasswordForm = document.getElementsByClassName('form-user-password')[0];
 const logoutBtn = document.getElementsByClassName('nav__el nav__el--logout')[0];
+const bookBtn = document.getElementById('book-tour');
 
 // Form Input values
 const email = document.getElementById('email') || null;
@@ -60,6 +62,14 @@ if(userPasswordForm) {
     });
 }
 
-if(logout) {
+if(logoutBtn) {
     logoutBtn.addEventListener('click', logout);
+}
+
+if(bookBtn) {
+    bookBtn.addEventListener('click', e => {
+        e.target.textContent = 'Processing...';
+        const {tourId} = e.target.dataset;
+        bookTour(tourId, e.target);
+    })
 }
