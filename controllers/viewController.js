@@ -1,3 +1,4 @@
+const Booking = require("../models/bookingsModel");
 const Tour = require("../models/tourModel");
 const User = require("../models/userModel");
 const AppError = require("../utils/appError");
@@ -26,7 +27,24 @@ const tourWtihReviews = await query.populate({path: 'reviews', fields: 'review r
     });
   });
 
+exports.getMyBookedTours = catchAsync(async(req, res, next) => {
+  // Find all bookings
+  const bookings = await Booking.find({user: req.user.id});
 
+  // Construct an array of tour ids
+  const tourIds = bookings.map(el => el.tour);
+
+  // Find all the above tours documents
+
+  const tours = await Tour.find({ _id: { $in: tourIds }});
+
+  res.status(200).render('overview', {
+    title: 'My Booked Tours',
+    tours
+  });
+
+
+});
 
 exports.getLoginForm = catchAsync(async (req, res, next) => {
   res.status(200).set(
