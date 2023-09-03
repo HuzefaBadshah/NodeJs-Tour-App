@@ -1,4 +1,3 @@
-import "@babel/polyfill";
 import { login, logout } from './login';
 import { displayMap } from "./leaflet";
 import { updateSettings } from "./updateSettings";
@@ -44,7 +43,7 @@ if(userDataForm) {
         form.append('name', nameValue);
         form.append('email', emailValue);
         form.append('photo', document.getElementById('photo').files[0]);
-        console.log('form multipart: ', form);
+        // console.log('form multipart: ', form);
         updateSettings(form, 'data');
     });
 }

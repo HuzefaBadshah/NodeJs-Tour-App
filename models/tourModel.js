@@ -155,10 +155,10 @@ tourSchema.pre('save', function(next) {
 // });
 
 // this document middleware runs only after all pre middlewares are done.
-tourSchema.post('save', function(doc, next) {
-  console.log('post middleware: ', doc);
-  next();
-});
+// tourSchema.post('save', function(doc, next) {
+//   console.log('post middleware: ', doc);
+//   next();
+// });
 
 // Query MIDDLEWARE:
 tourSchema.pre(/^find/, function(next) {

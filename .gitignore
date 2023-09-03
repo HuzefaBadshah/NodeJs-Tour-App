@@ -1,3 +1,5 @@
 # Ignore node_modules folder
-node_modules
-.parcel-cache
+node_modules/
+*.env
+.parcel-cache/
+.cache/

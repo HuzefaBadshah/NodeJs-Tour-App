@@ -22,5 +22,5 @@ export function displayMap(locations) {
    
   map.scrollWheelZoom.disable();
   
-  console.log('locations: ', locations);
+  // console.log('locations: ', locations);
 }

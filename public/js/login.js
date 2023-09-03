@@ -5,7 +5,8 @@ export async function login({email, password}) {
     try {
         const res = await axios({
             method: 'POST',
-            url: 'http://localhost:7000/api/v1/users/login',
+            // relative url as both client and server is deployed on same domain.
+            url: '/api/v1/users/login',
             data: {
                 email,
                 password
@@ -28,7 +29,8 @@ export async function logout() {
     try{
        const res = await axios({
             method: 'GET',
-            url: 'http://localhost:7000/api/v1/users/logout'
+            // relative url as both client and server is deployed on same domain.
+            url: '/api/v1/users/logout'
         });
         if(res.data.status === 'success'){
             // important to set reload(true) as it will reload from server and not from browser cache.

@@ -40,9 +40,9 @@ exports.signup = catchAsync(async function(req, res, next) {
     passwordConfirm: req.body.passwordConfirm,
     passwordChangedAt: req.body.passwordChangedAt
   });
-  console.log('protocol in signup: ', req.protocol);
-  console.log('host in signup: ', req.get('host'));
-  console.log('node env in signup: ', process.env.NODE_ENV);
+  // console.log('protocol in signup: ', req.protocol);
+  // console.log('host in signup: ', req.get('host'));
+  // console.log('node env in signup: ', process.env.NODE_ENV);
   const url = `${req.protocol}://${req.get('host')}/me`;
 
   await new Email(newUser, url).sendWelcome();
@@ -86,7 +86,6 @@ exports.protect = catchAsync(async function(req, res, next) {
   }
 
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-  console.log('decoded: ', decoded);
 
   // Check if user still exists
   const currentUser = await User.findById(decoded.id);
@@ -169,7 +168,6 @@ exports.restrictTo = function(...roles) {
 };
 
 exports.forgotPassword = async function(req, res, next) {
-  console.log('req.body.email: ', req.body.email);
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
     return next(new AppError('There is no user with this email address', 404));
@@ -229,7 +227,6 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
 exports.updatePassword = catchAsync(async function(req, res, next) {
   //1. Get user from collection.
-  console.log('updatePassword: ', req.user);
   const user = await User.findById(req.user.id).select('+password');
 
   // 2. Check if posted currentPassword is correct
