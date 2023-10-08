@@ -33,7 +33,7 @@ Welcome to My Tourism Experience Showcase, a portfolio application that demonstr
 
 To explore the My Tourism Experience Showcase, follow these steps:
 
-1. Clone the repository: `git clone https://github.com/yourusername/your-repo.git`
+1. Clone this repository
 2. Navigate to the project directory: `cd your-repo`
 3. Install dependencies and build the client-side bundle by running:
 
