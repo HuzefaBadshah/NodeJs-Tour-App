@@ -48,6 +48,45 @@ After the dependencies are installed and the bundle is built, you can start the 
 npm run dev
 ```
 
+### For Booking Tours Functionality
+In order to use this functionality on your machine you need to create account on [stripe](https://dashboard.stripe.com/)
+ #### Follow steps below:
+ 1. Create stripe account.
+ 2. Go to Developers > API keys.
+ 3. copy Publishable key and and paste in location: public/js/stripe.js
+ 4. copy Secret key and paste in the config.env under STRIPE_SECRET_KEY
+    
+### For Forgot Password Functionality
+In order to get mails when you click on forgot password, mails get trapped in [Mailtrap](https://mailtrap.io/). Since we are not sending real time mails to users. Please create account on given mailtrap link and follow steps below:
+  1. Click on add project and give any project name
+  2. Add inbox and go into that inbox by click on it
+  3. you should be able to click on "show credrentials" under "SMTP Settings"
+  4. map you config.env as EMAIL_USERNAME: Username, EMAIL_PASSWORD: Password, EMAIL_HOST: Host, EMAIL_PORT: 25, EMAIL_FROM: hello@test.io
+
+### Libraries used:
+    axios: On frontend for making api calls.
+    bcryptjs: For hashing and comparing user passwords.
+    compression: To compress received responses
+    cookie-parser: To parse data from cookie
+    dotenv: To configure path for config.env so that properties are available on process.env
+    express: NodeJs framework
+    express-mongo-sanitize: Data Sanitization for req.body, req.query and req.params against NoSQL query injection
+    express-rate-limit: To limit no. of request from same API
+    helmet: Set security HTTP headers
+    hpp: To prevent parameter pollution
+    html-to-text: Used along with nodemailer to parse html
+    jsonwebtoken: To create and verify Json Web Tokens
+    mongoose: To query mongo db
+    morgan: HTTP request logger middleware for node.js
+    multer: Multer is a node.js middleware for handling multipart/form-data, which is primarily used for uploading files
+    nodemailer: To be able to send mails in our case to mail trap,
+    pug: Templating engine,
+    sharp: to convert large images in common formats to smaller, web-friendly JPEG, PNG, WebP, GIF and AVIF images of varying dimensions
+    slugify: to transform strings
+    stripe: The Stripe Node library provides convenient access to the Stripe API
+    validator: Used for string validation
+    xss-clean: To protect from any malicious HTML code from user
+
 ## API Documentation
 
 For detailed API documentation and usage examples, please refer to our [API Documentation](https://documenter.getpostman.com/view/2647693/2s9YJW5R12).
