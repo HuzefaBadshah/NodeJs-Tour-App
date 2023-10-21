@@ -29,6 +29,9 @@ Welcome to My Tourism Experience Showcase, a portfolio application that demonstr
 - Experience the power of server-side rendering with **Pug** templates for a seamless user interface.
 - Witness efficient data storage and retrieval powered by MongoDB, ensuring smooth tour management.
 
+## Data Model
+![Natours Data Modelling image](https://github.com/HuzefaBadshah/NodeJs-Tour-App/blob/main/dev-data/data%20model%20img/Data%20Model.png)
+
 ## Installation
 
 To explore the My Tourism Experience Showcase, follow these steps:
