@@ -45,7 +45,7 @@ const tourSchema = new mongoose.Schema(
       min: [1, 'Rating must be above 1.0'],
       max: [5, 'Rating must be below 5.0'],
       // set will be called everytime ratingsAverage's value is set
-      set: val => Math.round(val*10)/10 // 4.6666 -> 46.666 -> 47 -> 4.7
+      set: val => Math.round(val * 10) / 10 // 4.6666 -> 46.666 -> 47 -> 4.7
     },
     ratingsQuantity: {
       type: Number,
@@ -54,7 +54,7 @@ const tourSchema = new mongoose.Schema(
     priceDiscount: {
       type: Number,
       validate: {
-        validator: function(val) {
+        validator: function (val) {
           // this only points to current doc on new document creation.
           return val < this.price;
         },
@@ -120,17 +120,17 @@ const tourSchema = new mongoose.Schema(
 );
 
 // creating the indexes on most queried paramaters, to only examin the matched docs as per query
-tourSchema.index({price: 1, ratingsAverage: -1});
-tourSchema.index({slug: 1});
-tourSchema.index({startLocation: '2dsphere'});
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' });
 
 
 // Virtual Property durationWeeks
-tourSchema.virtual('durationWeeks').get(function() {
+tourSchema.virtual('durationWeeks').get(function () {
   return (this.duration / 7).toFixed(2);
 });
 
-// Virtual Property reviews
+// Virtual Property reviews. This is virtual populate.
 tourSchema.virtual('reviews', {
   ref: 'Review',
   foreignField: 'tour',
@@ -139,7 +139,7 @@ tourSchema.virtual('reviews', {
 
 // DOCUMENT MIDDLEWARE:
 // this document middleware runs only before .save and .create
-tourSchema.pre('save', function(next) {
+tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
@@ -161,20 +161,20 @@ tourSchema.pre('save', function(next) {
 // });
 
 // Query MIDDLEWARE:
-tourSchema.pre(/^find/, function(next) {
+tourSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } });
   this.start = Date.now();
   next();
 });
 
-tourSchema.post(/^find/, function(docs, next) {
+tourSchema.post(/^find/, function (docs, next) {
   //console.log('post query middleware Docs: ', docs);
   console.log(`Query took ${Date.now() - this.start} milliseconds!`);
   next();
 });
 
 // populating the guides
-tourSchema.pre(/^find/, function(next) {
+tourSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'guides',
     select: '-__v -passwordChangedAt'
@@ -183,7 +183,7 @@ tourSchema.pre(/^find/, function(next) {
 });
 
 //Aggregation Middleware
-tourSchema.pre('aggregate', function(next) {
+tourSchema.pre('aggregate', function (next) {
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
   next();
 });
