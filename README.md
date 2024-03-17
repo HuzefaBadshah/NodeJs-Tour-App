@@ -53,8 +53,8 @@ npm run dev
 ```
 
 ## Login Credientials
-1. **Users**: loulou@example.com/test1234
-2. **Guide**: leo@example.com/test1234
+1. **Users**: loulou@example.com/test12345
+2. **Guide**: jennifer@example.com/test1234
 3. **Lead Guide**: steve@example.com/test1234
 
 ### For Booking Tours Functionality
